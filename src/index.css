@@ -1,0 +1,218 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Maraga '27 Campaign Design System
+   Colors: Kenya flag-inspired (Green, Red, Black, White)
+   All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Core brand colors - Kenya inspired */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+
+    /* Primary: Kenyan Green - #03A63C */
+    --primary: 149 95% 33%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary: Light green tint */
+    --secondary: 149 40% 97%;
+    --secondary-foreground: 149 95% 28%;
+
+    /* Muted: Soft gray */
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    /* Accent: Kenyan Red */
+    --accent: 0 72% 51%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* UI */
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 149 95% 33%;
+
+    --radius: 0.5rem;
+
+    /* Campaign specific */
+    --campaign-green: 149 95% 33%;
+    --campaign-green-dark: 149 95% 26%;
+    --campaign-green-light: 149 70% 45%;
+    --campaign-red: 0 72% 51%;
+    --campaign-red-dark: 0 72% 45%;
+    --campaign-gold: 45 93% 55%;
+    --campaign-blue: 210 100% 35%;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(149 95% 33%) 0%, hsl(149 95% 26%) 100%);
+    --gradient-cta: linear-gradient(90deg, hsl(0 72% 45%) 0%, hsl(0 72% 51%) 50%, hsl(45 93% 47%) 100%);
+    --gradient-join: linear-gradient(90deg, hsl(210 100% 35%) 0%, hsl(180 70% 40%) 50%, hsl(149 95% 33%) 100%);
+    --gradient-stripe: linear-gradient(135deg, hsl(270 70% 55%) 0%, hsl(280 80% 60%) 100%);
+    --gradient-paypal: linear-gradient(135deg, hsl(210 100% 40%) 0%, hsl(200 100% 50%) 100%);
+
+    /* Shadows */
+    --shadow-card: 0 2px 8px -2px hsl(0 0% 0% / 0.08), 0 4px 16px -4px hsl(0 0% 0% / 0.08);
+    --shadow-elevated: 0 8px 24px -8px hsl(0 0% 0% / 0.12), 0 16px 48px -16px hsl(0 0% 0% / 0.12);
+
+    /* Sidebar defaults */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5% 26%;
+    --sidebar-primary: 152 70% 32%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 152 40% 95%;
+    --sidebar-accent-foreground: 152 70% 25%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 152 70% 32%;
+  }
+
+  .dark {
+    --background: 152 20% 8%;
+    --foreground: 0 0% 95%;
+
+    --card: 152 20% 10%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 152 20% 10%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 152 60% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 152 30% 15%;
+    --secondary-foreground: 152 40% 80%;
+
+    --muted: 152 20% 15%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 0 65% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 152 20% 18%;
+    --input: 152 20% 18%;
+    --ring: 152 60% 45%;
+
+    --sidebar-background: 152 20% 8%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 152 60% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 152 30% 15%;
+    --sidebar-accent-foreground: 152 40% 80%;
+    --sidebar-border: 152 20% 18%;
+    --sidebar-ring: 152 60% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+@layer components {
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .gradient-cta {
+    background: var(--gradient-cta);
+  }
+
+  .gradient-join {
+    background: var(--gradient-join);
+  }
+
+  .gradient-stripe {
+    background: var(--gradient-stripe);
+  }
+
+  .gradient-paypal {
+    background: var(--gradient-paypal);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  .shadow-elevated {
+    box-shadow: var(--shadow-elevated);
+  }
+
+  /* Campaign-specific button styles */
+  .btn-movement {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200;
+  }
+
+  .btn-donate {
+    @apply bg-accent text-accent-foreground hover:bg-accent/90 transition-all duration-200;
+  }
+
+  .btn-join-gradient {
+    background: var(--gradient-join);
+    @apply text-white font-semibold transition-all duration-300;
+    background-size: 200% 100%;
+    background-position: left center;
+  }
+
+  .btn-join-gradient:hover {
+    background-position: right center;
+    @apply shadow-lg;
+  }
+
+  .btn-donate-gradient {
+    background: var(--gradient-hero);
+    @apply text-white font-semibold transition-all duration-300;
+    background-size: 200% 100%;
+    background-position: left center;
+  }
+
+  .btn-donate-gradient:hover {
+    background-position: right center;
+    @apply shadow-lg;
+  }
+
+  /* Voter Drive Button - Red to Green gradient, Blue to Green on hover */
+  .btn-voter-drive {
+    background: linear-gradient(90deg, hsl(0 72% 45%) 0%, hsl(30 90% 50%) 30%, hsl(152 55% 42%) 100%);
+    @apply font-semibold transition-all duration-500;
+    background-size: 100% 100%;
+  }
+
+  .btn-voter-drive:hover {
+    background: linear-gradient(90deg, hsl(210 100% 40%) 0%, hsl(180 70% 40%) 50%, hsl(152 55% 42%) 100%);
+  }
+
+  /* Section backgrounds */
+  .section-green {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  .section-light-green {
+    @apply bg-secondary;
+  }
+}
+
+/* Custom font imports */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
