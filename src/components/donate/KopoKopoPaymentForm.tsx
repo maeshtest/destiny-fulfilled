@@ -254,17 +254,25 @@ const KopoKopoPaymentForm = ({
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary rounded-full">
               <Clock className="w-4 h-4" />
               <span className="text-sm font-mono">
-                {countdown > 0 ? `${countdown}s` : "Auto redirecting..."}
+                {countdown > 0 ? `${countdown}s remaining` : "Still checking..."}
               </span>
             </div>
+            <p className="text-xs text-muted-foreground">
+              Auto-checking status… {pollCount > 0 && `(checked ${pollCount}x)`}
+            </p>
             <Button variant="outline" onClick={checkStatus} disabled={isChecking} className="mt-2">
               {isChecking ? (
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
               ) : (
                 <RefreshCw className="w-4 h-4 mr-2" />
               )}
-              Check Payment Status
+              Check Now
             </Button>
+            {countdown <= 0 && (
+              <Button variant="ghost" onClick={onFallbackManual} className="w-full mt-2">
+                Taking too long? Pay manually via Paybill
+              </Button>
+            )}
           </div>
         )}
 
