@@ -105,19 +105,53 @@ const KopoKopoPaymentForm = ({
     initiate();
   }, [initiate]);
 
-  // Auto‑complete after countdown (gives time for STK to finish)
+  // Countdown timer (display only — does NOT assume success)
   useEffect(() => {
-    if (status !== "waiting") return;
-    if (countdown <= 0) {
-      if (!completedRef.current) {
-        completedRef.current = true;
-        onComplete(); // assume success if no failure received
-      }
-      return;
-    }
+    if (status !== "waiting" || countdown <= 0) return;
     const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
     return () => clearTimeout(t);
-  }, [status, countdown, onComplete]);
+  }, [status, countdown]);
+
+  // Active polling — query gateway every 5s while waiting
+  useEffect(() => {
+    if (status !== "waiting" || !transactionId) return;
+
+    let cancelled = false;
+    const poll = async () => {
+      if (cancelled || completedRef.current || pollingRef.current) return;
+      pollingRef.current = true;
+      try {
+        const { data, error } = await supabase.functions.invoke("kopokopo-status", {
+          body: { transactionId },
+        });
+        if (cancelled || completedRef.current) return;
+        setPollCount((n) => n + 1);
+        if (!error && data?.status === "completed") {
+          completedRef.current = true;
+          setStatus("completed");
+          setTimeout(onComplete, 2000);
+        } else if (!error && data?.status === "failed") {
+          completedRef.current = true;
+          setStatus("failed");
+          setErrorMessage(data?.error || "Payment was declined");
+        }
+      } catch (err) {
+        console.warn("Poll failed:", err);
+      } finally {
+        pollingRef.current = false;
+      }
+    };
+
+    // First poll after 8s (give STK time to be answered), then every 5s
+    const initial = setTimeout(poll, 8000);
+    const interval = setInterval(poll, 5000);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(initial);
+      clearInterval(interval);
+    };
+  }, [status, transactionId, onComplete]);
 
   // Realtime listener for kopokopo_transactions updates
   useEffect(() => {
