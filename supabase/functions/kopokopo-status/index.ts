@@ -84,34 +84,49 @@ serve(async (req: Request) => {
     const result = await statusRes.json();
     const attributes = result?.data?.attributes;
     const paymentStatus = attributes?.status; // "Success", "Failed", "Pending"
+    const eventResource = attributes?.event?.resource ?? {};
+    const errorMsg =
+      attributes?.event?.errors ||
+      eventResource?.error_description ||
+      attributes?.metadata?.message ||
+      null;
 
-    // Update local DB
-    if (paymentStatus === "Success" || paymentStatus === "Failed") {
-      const newStatus = paymentStatus === "Success" ? "completed" : "failed";
-      await supabaseAdmin
+    // Always record the poll: bump updated_at, store latest raw response
+    const newStatus =
+      paymentStatus === "Success"
+        ? "completed"
+        : paymentStatus === "Failed"
+        ? "failed"
+        : "pending";
+
+    await supabaseAdmin
+      .from("kopokopo_transactions")
+      .update({
+        status: newStatus,
+        raw_callback: attributes ?? result,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", transactionId);
+
+    if (paymentStatus === "Success") {
+      const { data: txn } = await supabaseAdmin
         .from("kopokopo_transactions")
-        .update({ status: newStatus })
-        .eq("id", transactionId);
-
-      if (paymentStatus === "Success") {
-        // Mark donation as completed
-        const { data: txn } = await supabaseAdmin
-          .from("kopokopo_transactions")
-          .select("donation_id")
-          .eq("id", transactionId)
-          .single();
-        if (txn?.donation_id) {
-          await supabaseAdmin
-            .from("donations")
-            .update({ status: "completed" })
-            .eq("id", txn.donation_id);
-        }
+        .select("donation_id")
+        .eq("id", transactionId)
+        .single();
+      if (txn?.donation_id) {
+        await supabaseAdmin
+          .from("donations")
+          .update({ status: "completed" })
+          .eq("id", txn.donation_id);
       }
     }
 
     return new Response(
       JSON.stringify({
-        status: paymentStatus?.toLowerCase() ?? "pending",
+        status: newStatus,
+        gateway_status: paymentStatus,
+        error: errorMsg,
         raw: attributes,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }

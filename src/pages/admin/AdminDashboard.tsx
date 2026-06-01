@@ -324,10 +324,10 @@ const AdminDashboard = () => {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen">
-        <header className="sticky top-0 z-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border-b border-border px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <img src={maragaLogo} alt="Maraga '27" className="h-7 lg:hidden" />
-            <h1 className="text-xl font-heading font-bold bg-gradient-to-r from-primary to-campaign-gold bg-clip-text text-transparent">
+        <header className="sticky top-0 z-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border-b border-border px-3 sm:px-6 py-3 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <img src={maragaLogo} alt="Maraga '27" className="h-7 lg:hidden shrink-0" />
+            <h1 className="text-base sm:text-xl font-heading font-bold bg-gradient-to-r from-primary to-campaign-gold bg-clip-text text-transparent truncate">
               {SIDEBAR_ITEMS.find(i => i.id === activeTab)?.label || "Dashboard"}
             </h1>
           </div>
