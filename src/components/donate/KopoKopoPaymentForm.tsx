@@ -34,10 +34,12 @@ const KopoKopoPaymentForm = ({
 }: Props) => {
   const [status, setStatus] = useState<Status>("idle");
   const [transactionId, setTransactionId] = useState<string | null>(null);
-  const [countdown, setCountdown] = useState(60);
+  const [countdown, setCountdown] = useState(120);
   const [errorMessage, setErrorMessage] = useState("");
   const [isChecking, setIsChecking] = useState(false);
+  const [pollCount, setPollCount] = useState(0);
   const completedRef = useRef(false);
+  const pollingRef = useRef(false);
 
   const initiate = useCallback(async () => {
     setStatus("sending");
@@ -90,7 +92,8 @@ const KopoKopoPaymentForm = ({
 
       setTransactionId(data.transaction_id);
       setStatus("waiting");
-      setCountdown(60);
+      setCountdown(120);
+      setPollCount(0);
     } catch (err: any) {
       console.error("Kopo Kopo payment initiation error:", err);
       setErrorMessage(err.message || "Failed to initiate payment");
@@ -102,19 +105,53 @@ const KopoKopoPaymentForm = ({
     initiate();
   }, [initiate]);
 
-  // Auto‑complete after countdown (gives time for STK to finish)
+  // Countdown timer (display only — does NOT assume success)
   useEffect(() => {
-    if (status !== "waiting") return;
-    if (countdown <= 0) {
-      if (!completedRef.current) {
-        completedRef.current = true;
-        onComplete(); // assume success if no failure received
-      }
-      return;
-    }
+    if (status !== "waiting" || countdown <= 0) return;
     const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
     return () => clearTimeout(t);
-  }, [status, countdown, onComplete]);
+  }, [status, countdown]);
+
+  // Active polling — query gateway every 5s while waiting
+  useEffect(() => {
+    if (status !== "waiting" || !transactionId) return;
+
+    let cancelled = false;
+    const poll = async () => {
+      if (cancelled || completedRef.current || pollingRef.current) return;
+      pollingRef.current = true;
+      try {
+        const { data, error } = await supabase.functions.invoke("kopokopo-status", {
+          body: { transactionId },
+        });
+        if (cancelled || completedRef.current) return;
+        setPollCount((n) => n + 1);
+        if (!error && data?.status === "completed") {
+          completedRef.current = true;
+          setStatus("completed");
+          setTimeout(onComplete, 2000);
+        } else if (!error && data?.status === "failed") {
+          completedRef.current = true;
+          setStatus("failed");
+          setErrorMessage(data?.error || "Payment was declined");
+        }
+      } catch (err) {
+        console.warn("Poll failed:", err);
+      } finally {
+        pollingRef.current = false;
+      }
+    };
+
+    // First poll after 8s (give STK time to be answered), then every 5s
+    const initial = setTimeout(poll, 8000);
+    const interval = setInterval(poll, 5000);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(initial);
+      clearInterval(interval);
+    };
+  }, [status, transactionId, onComplete]);
 
   // Realtime listener for kopokopo_transactions updates
   useEffect(() => {
@@ -217,17 +254,25 @@ const KopoKopoPaymentForm = ({
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary rounded-full">
               <Clock className="w-4 h-4" />
               <span className="text-sm font-mono">
-                {countdown > 0 ? `${countdown}s` : "Auto redirecting..."}
+                {countdown > 0 ? `${countdown}s remaining` : "Still checking..."}
               </span>
             </div>
+            <p className="text-xs text-muted-foreground">
+              Auto-checking status… {pollCount > 0 && `(checked ${pollCount}x)`}
+            </p>
             <Button variant="outline" onClick={checkStatus} disabled={isChecking} className="mt-2">
               {isChecking ? (
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
               ) : (
                 <RefreshCw className="w-4 h-4 mr-2" />
               )}
-              Check Payment Status
+              Check Now
             </Button>
+            {countdown <= 0 && (
+              <Button variant="ghost" onClick={onFallbackManual} className="w-full mt-2">
+                Taking too long? Pay manually via Paybill
+              </Button>
+            )}
           </div>
         )}
 
