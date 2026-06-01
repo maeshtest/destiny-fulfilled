@@ -92,7 +92,8 @@ const KopoKopoPaymentForm = ({
 
       setTransactionId(data.transaction_id);
       setStatus("waiting");
-      setCountdown(60);
+      setCountdown(120);
+      setPollCount(0);
     } catch (err: any) {
       console.error("Kopo Kopo payment initiation error:", err);
       setErrorMessage(err.message || "Failed to initiate payment");
