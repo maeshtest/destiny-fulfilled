@@ -34,10 +34,12 @@ const KopoKopoPaymentForm = ({
 }: Props) => {
   const [status, setStatus] = useState<Status>("idle");
   const [transactionId, setTransactionId] = useState<string | null>(null);
-  const [countdown, setCountdown] = useState(60);
+  const [countdown, setCountdown] = useState(120);
   const [errorMessage, setErrorMessage] = useState("");
   const [isChecking, setIsChecking] = useState(false);
+  const [pollCount, setPollCount] = useState(0);
   const completedRef = useRef(false);
+  const pollingRef = useRef(false);
 
   const initiate = useCallback(async () => {
     setStatus("sending");
