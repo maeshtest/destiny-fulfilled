@@ -506,6 +506,7 @@ const AdminDashboard = () => {
               )}
               {activeTab === "transactions" && <AdminTransactions />}
               {activeTab === "monitor" && <AdminPaymentMonitor />}
+              {activeTab === "k2-stk" && <AdminKopoKopoMonitor />}
               {activeTab === "gateway" && <AdminGatewaySwitcher />}
               {activeTab === "volunteers" && <AdminVolunteers />}
               {activeTab === "sms" && <AdminSMS />}
