@@ -141,6 +141,7 @@ export type Database = {
           raw_callback: Json | null
           reference: string | null
           status: string
+          till: string | null
           updated_at: string
         }
         Insert: {
@@ -155,6 +156,7 @@ export type Database = {
           raw_callback?: Json | null
           reference?: string | null
           status?: string
+          till?: string | null
           updated_at?: string
         }
         Update: {
@@ -169,6 +171,7 @@ export type Database = {
           raw_callback?: Json | null
           reference?: string | null
           status?: string
+          till?: string | null
           updated_at?: string
         }
         Relationships: []
