@@ -77,12 +77,15 @@ serve(async (req: Request) => {
         const gw = attrs?.status; // Success | Failed | Pending
         const newStatus = gw === "Success" ? "completed" : gw === "Failed" ? "failed" : "pending";
 
+        const tillNumber = attrs?.till_number || attrs?.destination_till || null;
+
         await supabaseAdmin
           .from("kopokopo_transactions")
           .update({
             status: newStatus,
             raw_callback: attrs ?? json,
             updated_at: new Date().toISOString(),
+            ...(tillNumber ? { till: tillNumber } : {}),
           })
           .eq("id", row.id);
 

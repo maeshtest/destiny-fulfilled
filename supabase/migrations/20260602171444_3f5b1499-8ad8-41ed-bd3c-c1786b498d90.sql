@@ -1,0 +1,1 @@
+ALTER TABLE public.kopokopo_transactions ADD COLUMN IF NOT EXISTS till text;

@@ -126,6 +126,7 @@ serve(async (req: Request) => {
         msisdn,
         status: "pending",
         reference,
+        till: tillNumber,
       });
     }
 
