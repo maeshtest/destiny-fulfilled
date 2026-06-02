@@ -27,6 +27,7 @@ const AdminSMS = lazy(() => import("@/components/admin/AdminSMS"));
 const AdminTransactions = lazy(() => import("@/components/admin/AdminTransactions"));
 const AdminMaintenanceToggle = lazy(() => import("@/components/admin/AdminMaintenanceToggle"));
 const AdminPaymentMonitor = lazy(() => import("@/components/admin/AdminPaymentMonitor"));
+const AdminKopoKopoMonitor = lazy(() => import("@/components/admin/AdminKopoKopoMonitor"));
 
 // Types
 interface DashboardStats {
@@ -52,6 +53,7 @@ const SIDEBAR_ITEMS = [
   { id: "verification", label: "Verify Payments", icon: ShieldCheck, color: "text-amber-500" },
   { id: "transactions", label: "M-Pesa Txns", icon: Activity, color: "text-blue-500" },
   { id: "monitor", label: "Payment Monitor", icon: Activity, color: "text-cyan-500" },
+  { id: "k2-stk", label: "Kopo Kopo STK", icon: Zap, color: "text-green-600" },
   { id: "gateway", label: "M-Pesa Gateway", icon: Smartphone, color: "text-violet-500" },
   { id: "volunteers", label: "Volunteers", icon: Users, color: "text-purple-500" },
   { id: "sms", label: "SMS Manager", icon: MessageSquare, color: "text-pink-500" },
